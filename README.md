@@ -20,3 +20,15 @@ Also include here is the races program which sends out a summary email of upcomi
 
 
 
+
+## dutyman.js
+
+`js/dutyman.js` is the DutyMan duty scraper (`dutymand.py`) as a small JavaScript helper with no dependencies, so other apps (such as a race start app) can show who is on duty. It loads with a `<script>` tag (`window.Dutyman`) or `require()` in Node. dutyman.biz doesn't allow cross-origin requests, so fetch the roster on a server and parse it there:
+
+```js
+const Dutyman = require("./js/dutyman.js");
+const duties = await Dutyman.fetchDuties("R0001532");   // [{date: "2026-10-25", event, duty, person}]
+Dutyman.dutyList(duties, "2026-10-25");                  // "Duties: Safety Boat 1, ... . Safety Boat 2, ..."
+```
+
+`parseDuties(html)` takes the embed page's HTML if it's fetched some other way. Unlike `dutymand.py` it takes the roster ID as a parameter, works out the year of each date from its weekday (the roster shows "Sun, 03 Jan"), and keeps duties nobody has taken (person ""). Tests: `node --test js/dutyman.test.js`.
