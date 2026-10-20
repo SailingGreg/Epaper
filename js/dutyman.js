@@ -6,8 +6,10 @@
  * where the date and event are left blank on the rows that follow for the same day.
  *
  * Load it with <script src="dutyman.js"> (it sets window.Dutyman) or require("./dutyman.js") in Node.
- * dutyman.biz doesn't allow cross-origin requests, so a web page can't fetch the roster itself: fetch it
- * on the server (Node 18+ has fetch) and parse it there, or pass the page's HTML to parseDuties().
+ * dutyman.biz allows cross-origin reads (Access-Control-Allow-Origin: *), so a web page can fetch the
+ * roster directly, as long as its Content Security Policy allows https://dutyman.biz in connect-src.
+ * The request sends no custom headers, so the browser makes it without a preflight (which DutyMan
+ * answers with 405). On a server, Node 18+ has fetch.
  *
  *   const Dutyman = require("./dutyman.js");
  *   const duties = await Dutyman.fetchDuties("R0001532");
@@ -99,7 +101,8 @@
 
   async function fetchDuties(rosterId, { maxRows = 9999, now = new Date(), fetch: get = root.fetch } = {}) {
     if (typeof get !== "function") throw new Error("No fetch available (Node 18+ or pass { fetch })");
-    const response = await get(dutymanUrl(rosterId, maxRows), { headers: { "User-Agent": "Mozilla/5.0" } });
+    // No custom headers: a header such as User-Agent would make browsers send a preflight, which fails
+    const response = await get(dutymanUrl(rosterId, maxRows));
     if (!response.ok) throw new Error(`DutyMan returned ${response.status}`);
     return parseDuties(await response.text(), { now });
   }

@@ -23,7 +23,7 @@ Also include here is the races program which sends out a summary email of upcomi
 
 ## dutyman.js
 
-`js/dutyman.js` is the DutyMan duty scraper (`dutymand.py`) as a small JavaScript helper with no dependencies, so other apps (such as a race start app) can show who is on duty. It loads with a `<script>` tag (`window.Dutyman`) or `require()` in Node. dutyman.biz doesn't allow cross-origin requests, so fetch the roster on a server and parse it there:
+`js/dutyman.js` is the DutyMan duty scraper (`dutymand.py`) as a small JavaScript helper with no dependencies, so other apps (such as a race start app) can show who is on duty. It loads with a `<script>` tag (`window.Dutyman`) or `require()` in Node. dutyman.biz allows cross-origin reads (`Access-Control-Allow-Origin: *`), so a web page can fetch the roster itself if its Content Security Policy lists `https://dutyman.biz` in `connect-src`; on a server, Node 18+ has `fetch`:
 
 ```js
 const Dutyman = require("./js/dutyman.js");
